@@ -27,8 +27,8 @@
     <!--Used in overflow menu to refresh weather data-->
     <string name="action_refresh">Refresh</string>
 
-    <!--TODO (1) Add a string resource for your error message-->
-
+    <!--TODO (1) Add a string resource for your error message  **DONE** -->
+    <string name="error">An Error occurred. Please Try Again!</string>
 
     <!-- - - - - - - - - - - - - -->
     <!--Used by SunshineDateUtils-->
