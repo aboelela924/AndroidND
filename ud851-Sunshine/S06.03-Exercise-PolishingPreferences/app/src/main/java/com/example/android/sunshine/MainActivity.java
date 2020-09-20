@@ -17,8 +17,10 @@ package com.example.android.sunshine;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -41,10 +43,12 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements
         ForecastAdapter.ForecastAdapterOnClickHandler,
+        SharedPreferences.OnSharedPreferenceChangeListener,
         // TODO (3) Implement OnSharedPreferenceChangeListener on MainActivity
         LoaderCallbacks<String[]> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static boolean PREFERENCE_UPDATE_FLAG = false;
 
     private RecyclerView mRecyclerView;
     private ForecastAdapter mForecastAdapter;
@@ -148,6 +152,9 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(TAG, "onCreate: registering preference changed listener");
 
         // TODO (6) Register MainActivity as a OnSharedPreferenceChangedListener in onCreate
+        PreferenceManager
+                .getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -272,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     private void openLocationInMap() {
         // TODO (9) Use preferred location rather than a default location to display in the map
-        String addressString = "1600 Ampitheatre Parkway, CA";
+        String addressString = SunshinePreferences.getPreferredWeatherLocation(this);
         Uri geoLocation = Uri.parse("geo:0,0?q=" + addressString);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -329,7 +336,27 @@ public class MainActivity extends AppCompatActivity implements
 
     // TODO (7) In onStart, if preferences have been changed, refresh the data and set the flag to false
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(PREFERENCE_UPDATE_FLAG){
+            Bundle args = null;
+            getSupportLoaderManager().initLoader(FORECAST_LOADER_ID,
+                    args,
+                    this);
+            PREFERENCE_UPDATE_FLAG = false;
+        }
+    }
+
     // TODO (8) Override onDestroy and unregister MainActivity as a SharedPreferenceChangedListener
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager
+                .getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -363,6 +390,11 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        PREFERENCE_UPDATE_FLAG = true;
     }
 
     // TODO (5) Override onSharedPreferenceChanged to set the preferences flag to true
