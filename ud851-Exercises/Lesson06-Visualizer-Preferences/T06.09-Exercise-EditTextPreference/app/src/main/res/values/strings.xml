@@ -6,6 +6,9 @@
     <!-- - - - - - - - - - - - - - - -
           - Used by Preferences  -
           - - - - - - - - - - - - - - - -->
+    <string name="pref_size_multiplier_title">Size Multiplier</string>
+    <string name="pref_size_multiplier_key">size_multiplier</string>
+    <string name="pref_size_multiplier_default_value">1</string>
 
     <!-- Label for the show bass checkbox preference -->
     <string name="pref_show_bass_label">Show Bass</string>
